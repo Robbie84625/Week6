@@ -62,7 +62,16 @@ def home():
 def member():
     if "name" in session:
         name = session.get("name")
-        return render_template("member.html", name=name)
+        cursor=con.cursor()
+        cursor.execute("SELECT member.id, member.name, message.content FROM member JOIN message ON member.id = message.member_id ORDER BY message.time;")
+    
+        messageContent = cursor.fetchall()
+
+        messages = [{"memberName": row[1], "content": row[2]} for row in messageContent]
+
+        # 關閉資料庫
+        cursor.close()
+        return render_template("Member.html", name=name, messages=messages)
     else:
         return redirect("/")
 
@@ -116,20 +125,7 @@ def createMessage():
     cursor.execute("INSERT INTO message(member_id, content) VALUES (%s, %s)", (userId, content))
     # 執行
     con.commit()
-
-    cursor.execute("SELECT member.id, member.name, message.content FROM member JOIN message ON member.id = message.member_id ORDER BY message.time;")
-    
-    messageContent = cursor.fetchall()
-
-    messages = [{"memberName": row[1], "content": row[2]} for row in messageContent]
-
-
-    # 關閉資料庫
-    cursor.close()
-    if "name" in session:
-        name = session.get("name")
-    return render_template("Member.html",name=name, messages=messages)
-    
+    return redirect("/member")
 
 
 
