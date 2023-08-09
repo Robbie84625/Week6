@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <meta charset="utf-8"/>
+    <title>My Webside</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS_Selectors.css') }}"/>
+</head>
+<body>
+    <div class="welcome">歡迎光臨! 這是會員頁</div>
+    <div class="UI">
+        <div id="titleText">{{name}}歡迎登入系統</div>
+        <form action="signout">
+            <div id="titleText"><button>登出</button></div>
+        </form>
+    </div>
+    <hr/>
+    <div class="UI">
+        <form action="createMessage" method="POST">
+            <div id="titleText">快來留言吧</div>
+            <div id="titleText">內容 <input type="text" name="messageContent" id="messageInput" /></div>
+            <div id="titleText"><button>送出</button></div>
+        </form>
+    </div>
+    <hr/>
+    <div class="UI">
+        <!--因為python flask 讓HTML樣板引擎能控制for迴圈-->
+        {% for message in messages %}
+        <div id="titleText">{{ message.name }}: {{ message.content }}
+            {% if name == message.name %}
+            <span>
+                <button onclick="deleteMessage('{{ message.id }}')" class="Icon">x</button>
+            </span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        function deleteMessage(messageId) {
+            if (confirm("確定要刪除嗎？")) {
+                console.log(messageId)
+                // 串接 URL，將訊息的 id 添加到 /delete/的route中 
+                var deleteUrl = '/delete/' + messageId;
+                // 導航到'/delete/'
+                window.location.href = deleteUrl;
+            }
+        }
+    </script>
+</body>
+</html>
